@@ -1,26 +1,20 @@
 package ru.ifmo.android.broadcastreceiversample;
 
-import android.app.DownloadManager;
 import android.app.IntentService;
-import android.content.Context;
 import android.content.Intent;
-import android.media.MediaActionSound;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.channels.FileChannel;
 
 import static ru.ifmo.android.broadcastreceiversample.Constants.*;
 
@@ -47,12 +41,14 @@ public class MainService extends IntentService {
         File file = null;
         try {
             String picName = Uri.parse(urlString).getLastPathSegment();
-            file = File.createTempFile(picName, null, getCacheDir());
+            file = new File(getFilesDir().getPath() + picName);
 
             Log.d(TAG, "onHandleIntent: downloading file " + picName);
             Log.d(TAG, "onHandleIntent: filePath = " + file.getPath());
 
             URLConnection connection = new URL(urlString).openConnection();
+            connection.setConnectTimeout(15000);
+            connection.setReadTimeout(3000);
             connection.connect();
 
             InputStream is  = new BufferedInputStream(connection.getInputStream());
