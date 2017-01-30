@@ -39,9 +39,9 @@ public class MainService extends IntentService {
 
         boolean success = false;
         File file = null;
+        String picName = Uri.parse(urlString).getLastPathSegment();
         try {
-            String picName = Uri.parse(urlString).getLastPathSegment();
-            file = new File(getFilesDir().getPath() + picName);
+            file = new File(getFilesDir(), picName);
 
             Log.d(TAG, "onHandleIntent: downloading file " + picName);
             Log.d(TAG, "onHandleIntent: filePath = " + file.getPath());
@@ -67,9 +67,7 @@ public class MainService extends IntentService {
 
         Bundle resultData = new Bundle();
         resultData.putBoolean(KEY_SUCCESS, success);
-        if (file != null) {
-            resultData.putString(KEY_PICTURE_PATH, file.getPath());
-        }
+        resultData.putString(KEY_PICTURE_PATH, picName);
         receiver.send(1, resultData);
     }
 }
