@@ -2,6 +2,8 @@ package ru.ifmo.android.broadcastreceiversample;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ResultReceiver;
@@ -38,28 +40,21 @@ public class MainService extends IntentService {
         Log.d(TAG, "onHandleIntent: receiver = " + receiver);
 
         boolean success = false;
-        File file = null;
         String picName = Uri.parse(urlString).getLastPathSegment();
+        File file = new File(getFilesDir(), picName);
         try {
-            file = new File(getFilesDir(), picName);
+            if (file.exists()) {
+                Log.d(TAG, "onHandleIntent: file already existed");
+            } else {
+                Log.d(TAG, "onHandleIntent: downloading file " + picName);
+                Log.d(TAG, "onHandleIntent: filePath = " + file.getPath());
 
-            Log.d(TAG, "onHandleIntent: downloading file " + picName);
-            Log.d(TAG, "onHandleIntent: filePath = " + file.getPath());
-
-            URLConnection connection = new URL(urlString).openConnection();
-            connection.setConnectTimeout(15000);
-            connection.setReadTimeout(3000);
-            connection.connect();
-
-            InputStream is  = new BufferedInputStream(connection.getInputStream());
-            OutputStream os = new FileOutputStream(file);
-            byte buff[] = new byte[2048];
-            while(is.read(buff) != -1) {
-                os.write(buff);
+                InputStream in = new URL(urlString).openConnection().getInputStream();
+                Bitmap img = BitmapFactory.decodeStream(in);
+                FileOutputStream out = new FileOutputStream(file);
+                img.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                out.close();
             }
-            os.close();
-            is.close();
-
             success = true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -67,7 +62,7 @@ public class MainService extends IntentService {
 
         Bundle resultData = new Bundle();
         resultData.putBoolean(KEY_SUCCESS, success);
-        resultData.putString(KEY_PICTURE_PATH, picName);
+        resultData.putString(KEY_PICTURE_PATH, file.getAbsolutePath());
         receiver.send(1, resultData);
     }
 }

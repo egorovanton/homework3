@@ -9,5 +9,5 @@ public class Constants {
     public static final String KEY_PICTURE_PATH = "KEY_PICTURE_PATH";
     public static final String KEY_RESULT_RECEIVER= "KEY_RESULT_RECEIVER";
 
-    public static final String IMAGE_SOURCE_URL = "http://combiboilersleeds.com/images/picture/picture-0.jpg";
+    public static final String IMAGE_SOURCE_URL = "http://breedinfo.ru/uploads/posts/2015-12/5_pug.jpg";
 }
